@@ -2,7 +2,7 @@
 
 english | [中文](README_TW.md)
 
-golang AES 加解密包
+golang AES encryption/decryption package
 
 ## Encryption Mode
 
