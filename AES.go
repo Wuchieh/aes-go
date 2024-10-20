@@ -88,13 +88,13 @@ func removePadding(data []byte, paddingType string) ([]byte, error) {
 	}
 }
 
-func (a *AESOptions) Encryption(content string) (string, error) {
+func (a *AESOptions) EncryptionByte(content []byte) ([]byte, error) {
 	block, err := aes.NewCipher(a.Key)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	plaintext := []byte(content)
+	plaintext := content
 	blockSize := block.BlockSize()
 
 	// Apply padding
@@ -108,7 +108,7 @@ func (a *AESOptions) Encryption(content string) (string, error) {
 	case ANSIX923:
 		plaintext = applyANSIX923Padding(plaintext, blockSize)
 	default:
-		return "", errors.New("unsupported padding type")
+		return nil, errors.New("unsupported padding type")
 	}
 
 	ciphertext := make([]byte, len(plaintext))
@@ -128,7 +128,16 @@ func (a *AESOptions) Encryption(content string) (string, error) {
 		mode := cipher.NewOFB(block, a.IV)
 		mode.XORKeyStream(ciphertext, plaintext)
 	default:
-		return "", errors.New("unsupported encryption mode")
+		return nil, errors.New("unsupported encryption mode")
+	}
+
+	return ciphertext, nil
+}
+
+func (a *AESOptions) Encryption(content string) (string, error) {
+	ciphertext, err := a.EncryptionByte([]byte(content))
+	if err != nil {
+		return "", err
 	}
 
 	var result string
@@ -144,23 +153,25 @@ func (a *AESOptions) Encryption(content string) (string, error) {
 	return result, nil
 }
 
-func (a *AESOptions) Decryption(content string) (string, error) {
+func (a *AESOptions) DecryptionByte(content []byte) ([]byte, error) {
 	block, err := aes.NewCipher(a.Key)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+
+	contentStr := string(content)
 
 	var ciphertext []byte
 	switch a.Output {
 	case Base64:
-		ciphertext, err = base64.StdEncoding.DecodeString(content)
+		ciphertext, err = base64.StdEncoding.DecodeString(contentStr)
 	case Hex:
-		ciphertext, err = hex.DecodeString(content)
+		ciphertext, err = hex.DecodeString(contentStr)
 	default:
-		return "", errors.New("unsupported input format")
+		return nil, errors.New("unsupported input format")
 	}
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	plaintext := make([]byte, len(ciphertext))
@@ -181,14 +192,22 @@ func (a *AESOptions) Decryption(content string) (string, error) {
 		mode := cipher.NewOFB(block, a.IV)
 		mode.XORKeyStream(plaintext, ciphertext)
 	default:
-		return "", errors.New("unsupported decryption mode")
+		return nil, errors.New("unsupported decryption mode")
 	}
 
 	// Remove padding
 	plaintext, err = removePadding(plaintext, a.Padding)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(plaintext), nil
+	return plaintext, nil
+}
+
+func (a *AESOptions) Decryption(content string) (string, error) {
+	decryptionByte, err := a.DecryptionByte([]byte(content))
+	if err != nil {
+		return "", err
+	}
+	return string(decryptionByte), nil
 }

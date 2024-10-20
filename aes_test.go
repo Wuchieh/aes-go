@@ -8,6 +8,7 @@ func TestAES(t *testing.T) {
 	outputFormat := []string{Base64, Hex}
 	key := []byte("pwFHCqoQZGmho4w6")
 	iv := []byte("EkRm7iFT261dpevs")
+	content := "hello world"
 
 	for _, formatType := range outputFormat {
 		for _, paddingType_ := range paddingType {
@@ -20,7 +21,7 @@ func TestAES(t *testing.T) {
 					IV:      iv,
 				}
 
-				encryption, err := aes.Encryption("hello world")
+				encryption, err := aes.Encryption(content)
 				if err != nil {
 					t.Fatal("Encryption error",
 						formatType,
@@ -30,7 +31,12 @@ func TestAES(t *testing.T) {
 					return
 				}
 
-				encryptionGPT, err := aes.EncryptionGPT("hello world")
+				t.Log(formatType,
+					paddingType_,
+					mode_,
+					encryption)
+
+				encryptionGPT, err := aes.EncryptionGPT(content)
 				if err != nil {
 					t.Fatal("Encryption error",
 						formatType,
@@ -69,14 +75,14 @@ func TestAES(t *testing.T) {
 					return
 				}
 
-				if decryption != "hello world" {
+				if decryption != content {
 					t.Fatal("Decrypted string does not match",
 						formatType,
 						paddingType_,
 						mode_)
 				}
 
-				if decryptionGPT != "hello world" {
+				if decryptionGPT != content {
 					t.Fatal("GPT Decrypted string does not match",
 						formatType,
 						paddingType_,
