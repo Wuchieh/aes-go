@@ -3,9 +3,9 @@ package aesgo
 import "testing"
 
 func TestAES(t *testing.T) {
-	mode := []string{ECB, CBC, CFB, OFB}
-	paddingType := []string{PKCS5Padding, PKCS7Padding, ZeroPadding, ISO10126, ANSIX923}
-	outputFormat := []string{Base64, Hex}
+	mode := []EncryptionMode{ECB, CBC, CFB, OFB}
+	paddingType := []PaddingMode{PKCS5Padding, PKCS7Padding, ZeroPadding, ISO10126, ANSIX923}
+	outputFormat := []OutputFormat{Base64, Hex}
 	key := []byte("pwFHCqoQZGmho4w6")
 	iv := []byte("EkRm7iFT261dpevs")
 	content := "hello world"

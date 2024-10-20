@@ -1,38 +1,15 @@
-# aes-go
-
-[english](README.md) | 中文
-
-golang AES 加解密包
-
-## 加密模式
-
-* ecb
-* cbc
-* cfb
-* ofb
-
-## 填充模式
-
-* pkcs5
-* pkcs7
-* zero
-* iso10126
-* ansix923
-
-## 範例
-
-```go
-package main
+package aesgo
 
 import (
-    "github.com/wuchieh/aes-go"
+	"fmt"
+	"log"
 )
 
-func main(){
+func ExampleAESOptions_Encryption() {
 	key := []byte("pwFHCqoQZGmho4w6")
 	iv := []byte("EkRm7iFT261dpevs")
 
-	aes := aesgo.AESOptions{
+	aes := AESOptions{
 		Mode:    CBC,
 		Padding: PKCS5Padding,
 		Output:  Base64,
@@ -55,5 +32,8 @@ func main(){
 	}
 
 	fmt.Println(decryption)
+
+	//	Output:
+	//ajjTrSSO/Z11GxiPAphb7Q==
+	//hello world
 }
-```

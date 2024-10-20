@@ -11,34 +11,11 @@ import (
 	"io"
 )
 
-// Padding types
-const (
-	PKCS5Padding = "pkcs5"
-	PKCS7Padding = "pkcs7"
-	ZeroPadding  = "zero"
-	ISO10126     = "iso10126"
-	ANSIX923     = "ansix923"
-)
-
-// AES modes
-const (
-	ECB = "ecb"
-	CBC = "cbc"
-	CFB = "cfb"
-	OFB = "ofb"
-)
-
-// Output formats
-const (
-	Base64 = "base64"
-	Hex    = "hex"
-)
-
 // AESOptions Encryption options structure
 type AESOptions struct {
-	Mode    string
-	Padding string
-	Output  string
+	Mode    EncryptionMode
+	Padding PaddingMode
+	Output  OutputFormat
 	Key     []byte
 	IV      []byte
 }
@@ -72,7 +49,7 @@ func applyANSIX923Padding(data []byte, blockSize int) []byte {
 }
 
 // Removes padding after decryption
-func removePadding(data []byte, paddingType string) ([]byte, error) {
+func removePadding(data []byte, paddingType PaddingMode) ([]byte, error) {
 	length := len(data)
 	switch paddingType {
 	case PKCS5Padding, PKCS7Padding:
